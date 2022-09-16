@@ -103,6 +103,7 @@
 #' @rdname popup
 popupTable = function(x,
                       zcol,
+                      attr.names,
                       row.numbers = TRUE,
                       feature.id = TRUE,
                       className = NULL) {
@@ -111,7 +112,9 @@ popupTable = function(x,
 
   brewPopupTable(
     x
-    , zcol
+    , zcol,
+    attr.names
+    , 
     , row.numbers = row.numbers
     , feature.id = feature.id
     , className = className
@@ -122,11 +125,16 @@ popupTable = function(x,
 # create popup table of attributes
 brewPopupTable = function(x,
                           zcol,
+                          attr.names,
                           width = 300,
                           height = 300,
                           row.numbers = TRUE,
                           feature.id = TRUE,
                           className = NULL) {
+  
+  if (length(attr.names) != length(zcol)) {
+    stop(paste0("Error! Label names must have length", length(zcol)))
+  }
 
   if (inherits(x, "Spatial")) x = x@data
   if (inherits(x, "sf")) x = as.data.frame(x)
@@ -134,7 +142,7 @@ brewPopupTable = function(x,
   if (!missing(zcol)) x = x[, zcol, drop = FALSE]
 
   # ensure utf-8 for column names (column content is handled on C++ side)
-  colnames(x) = enc2utf8(colnames(x))
+  colnames(x) = enc2utf8(attr.names)
 
   if (inherits(x, "SpatialPoints")) {
     mat = NULL
